@@ -88,51 +88,6 @@ ngVis.directive('vis', function () {
   }
 });
 
-ngVis.directive('timeLine', function () {
-  return {
-    restrict: 'EA',
-    require: '^vis',
-    transclude: false,
-    scope: {
-      data: '=',
-      options: '=',
-      events: '='
-    },
-    link: function (scope, element, attr, visCtrl) {
-      var timeline = new vis.Timeline(element[0]);
-
-      scope.$watch('data', function () {
-        timeline.clear({options: true});
-
-        if (scope.data.single) {
-          timeline.clear({groups: true});
-          timeline.setItems(scope.data.load);
-        } else {
-          timeline.setGroups(scope.data.load.groups);
-          timeline.setItems(scope.data.load.items);
-        }
-
-        timeline.fit();
-      });
-
-      scope.$watchCollection('options', function (options) {
-        timeline.clear({options: true});
-        timeline.setOptions(options);
-      });
-
-      scope.$watch('events', function (events) {
-        angular.forEach(events, function (callback, event) {
-          if (['rangechange', 'rangechanged', 'select', 'timechange', 'timechanged'].indexOf(String(event)) >= 0) {
-            timeline.on(event, callback);
-          }
-        });
-      });
-
-      visCtrl.setTimeline(timeline);
-    }
-  }
-});
-
 ngVis.directive('timeBoard', function () {
   return {
     restrict: 'EA',
@@ -350,3 +305,130 @@ ngVis.directive('timeNavigation', function () {
     }
   }
 });
+
+ngVis.directive('timeLine', function () {
+    return {
+        restrict: 'EA',
+        require: '^vis',
+        transclude: false,
+        scope: {
+            data: '=',
+            options: '=',
+            events: '='
+        },
+        link: function (scope, element, attr, visCtrl) {
+            var timeline = new vis.Timeline(element[0]);
+
+            scope.$watch('data', function () {
+                timeline.clear({options: true});
+
+                if (scope.data.single) {
+                    timeline.clear({groups: true});
+                    timeline.setItems(scope.data.load);
+                } else {
+                    timeline.setGroups(scope.data.load.groups);
+                    timeline.setItems(scope.data.load.items);
+                }
+
+                timeline.fit();
+            });
+
+            scope.$watchCollection('options', function (options) {
+                timeline.clear({options: true});
+                timeline.setOptions(options);
+            });
+
+            scope.$watch('events', function (events) {
+                angular.forEach(events, function (callback, event) {
+                    if (['rangechange', 'rangechanged', 'select', 'timechange', 'timechanged'].indexOf(String(event)) >= 0) {
+                        timeline.on(event, callback);
+                    }
+                });
+            });
+
+            visCtrl.setTimeline(timeline);
+        }
+    }
+});
+
+ngVis.directive('graph2d', function () {
+    return {
+        restrict: 'EA',
+        require: '^vis',
+        transclude: false,
+        scope: {
+            data: '=',
+            options: '=',
+            events: '='
+        },
+        link: function (scope, element, attr, visCtrl) {
+            var graph = new vis.Graph2d(element[0]);
+
+            scope.$watch('data', function () {
+                graph.clear({options: true});
+
+                if(scope.data === undefined) {
+                    return;
+                }
+
+                if (scope.data.single) {
+                    graph.clear({groups: true});
+                    graph.setItems(scope.data.load);
+                } else {
+                    graph.setGroups(scope.data.load.groups);
+                    graph.setItems(scope.data.load.items);
+                }
+
+                graph.fit();
+            });
+
+            scope.$watchCollection('options', function (options) {
+                graph.clear({options: true});
+                graph.setOptions(options);
+            });
+
+            scope.$watch('events', function (events) {
+                angular.forEach(events, function (callback, event) {
+                    if (['rangechange', 'rangechanged', 'select', 'timechange', 'timechanged'].indexOf(String(event)) >= 0) {
+                        graph.on(event, callback);
+                    }
+                });
+            });
+
+            visCtrl.setTimeline(graph);
+        }
+    }
+});
+
+ngVis.directive('visNetwork', function () {
+    return {
+        restrict: 'EA',
+        require: '^vis',
+        transclude: false,
+        scope: {
+            data: '=',
+            options: '=',
+            events: '='
+        },
+        link: function (scope, element, attr, visCtrl) {
+            var network = new vis.Network(element[0], scope.data, scope.options);
+
+            scope.$watch('data', function () {
+                network.setData(scope.data);
+            });
+
+            scope.$watchCollection('options', function (options) {
+                network.setOptions(options);
+            });
+
+            scope.$watch('events', function (events) {
+                angular.forEach(events, function (callback, event) {
+                    if (['select','click','hoverNode'].indexOf(String(event)) >= 0) {
+                        network.on(event, callback);
+                    }
+                });
+            });
+        }
+    }
+});
+
